@@ -1,0 +1,17 @@
+<head>
+    <title>Добавить остатки</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Добавить остатки для: {{ product.name }}</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="form-row">{{ form.shop }} {{ form.stock }}</div>
+            {% endfor %}
+            <button type="submit" class="button">Сохранить</button>
+        </form>
+    </div>
+</body>

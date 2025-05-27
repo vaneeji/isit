@@ -1,0 +1,74 @@
+<div>
+    <meta charset="UTF-8">
+    <title>Список товаров</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</div>
+
+<div class="container">
+    <h1>🛍️ Каталог товаров</h1>
+
+    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;">
+        <label for="limitInput" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #555;">
+            🔢 Ограничить количество:
+            <input type="number" id="limitInput" placeholder="Введите число"
+                   hx-get="{% url 'product_list_partial' %}"
+                   hx-target="#product-list"
+                   hx-trigger="input changed delay:500ms"
+                   hx-vals='{"limit": "this.value"}'
+                   style="width: 150px;">
+        </label>
+        <button class="button" onclick="applyLimit()" style="padding: 0.8rem 1.5rem;">
+            ✨ Применить
+        </button>
+    </div>
+
+    <ul id="product-list" class="product-list">
+        {% for product in products %}
+            <li class="product-item">
+                <a hx-get="{% url 'product_detail_partial' product.id %}"
+                    hx-target="#main-content"
+                    hx-swap="innerHTML"
+                    style="cursor: pointer;">
+                    <img src="data:image/png;base64,{{ product.image }}" alt="{{ product.name }}">
+                    <div style="padding: 1rem 0;">
+                        <div style="font-weight: 600; font-size: 1.2rem; margin-bottom: 0.5rem; color: #333;">
+                            {{ product.name }}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #667eea; font-weight: 600; font-size: 1.1rem;">
+                                💰 {{ product.price }} руб.
+                            </span>
+                            <span style="background: rgba(102, 126, 234, 0.1); color: #667eea; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.9rem; font-weight: 600;">
+                                📦 {{ product.stock }} шт.
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </li>
+        {% empty %}
+            <div style="text-align: center; padding: 4rem; color: #999; font-size: 1.2rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">📦</div>
+                <p>Нет товаров в каталоге</p>
+                <a hx-get="{% url 'add_product_partial' %}"
+                   hx-target="#main-content"
+                   hx-swap="innerHTML"
+                   class="button"
+                   style="margin-top: 1rem;">
+                    ➕ Добавить первый товар
+                </a>
+            </div>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    function applyLimit() {
+        let limit = document.getElementById('limitInput').value;
+        if (limit) {
+            htmx.ajax('GET', '{% url "product_list_partial" %}?limit=' + limit, {
+                target: '#product-list',
+                swap: 'innerHTML'
+            });
+        }
+    }
+</script>

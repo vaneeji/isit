@@ -1,0 +1,89 @@
+<div class="container">
+    <h1>🏪 Наши магазины</h1>
+
+    <div id="shops-list">
+        {% for shop in shops %}
+            <div class="shop">
+                <div class="shop-header"
+                     onclick="toggleProducts({{ shop.id }})"
+                     style="cursor: pointer;"
+                     id="shop-header-{{ shop.id }}">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="font-size: 1.5rem;">🏪</span>
+                        <div>
+                            <div style="font-size: 1.2rem; font-weight: 600; color: #333;">
+                                {{ shop.name }}
+                            </div>
+                            <div style="color: #666; font-size: 0.9rem; font-weight: 400;">
+                                📍 {{ shop.location }}
+                            </div>
+                        </div>
+                    </div>
+                    <span id="arrow-{{ shop.id }}" class="arrow">▶</span>
+                </div>
+
+                <ul id="products-{{ shop.id }}" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(102, 126, 234, 0.05); border-radius: 10px;"></ul>
+
+                <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                    <form method="post"
+                          hx-post="{% url 'delete_shop_partial' shop.id %}"
+                          hx-target="#shops-list"
+                          hx-swap="outerHTML"
+                          hx-confirm="Вы уверены, что хотите удалить магазин '{{ shop.name }}'?"
+                          style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="button danger" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            🗑️ Удалить
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <div style="text-align: center; padding: 4rem; color: #999; font-size: 1.2rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🏪</div>
+                <p>Магазины не найдены</p>
+                <a hx-get="{% url 'add_shop_partial' %}"
+                   hx-target="#main-content"
+                   hx-swap="innerHTML"
+                   class="button"
+                   style="margin-top: 1rem;">
+                    ➕ Добавить первый магазин
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a hx-get="{% url 'add_shop_partial' %}"
+           hx-target="#main-content"
+           hx-swap="innerHTML"
+           class="button">
+            ➕ Добавить новый магазин
+        </a>
+    </div>
+</div>
+
+<script>
+    function toggleProducts(shopId) {
+        const list = document.getElementById('products-' + shopId);
+        const arrow = document.getElementById('arrow-' + shopId);
+
+        if (list.style.display === 'none') {
+            list.style.display = 'block';
+            arrow.textContent = '▼';
+            arrow.style.transform = 'rotate(90deg)';
+
+            if (list.innerHTML.trim() === '') {
+                list.innerHTML = '<div class="loading">Загрузка товаров...</div>';
+                htmx.ajax('GET', `/shops/${shopId}/products/`, {
+                    target: list,
+                    swap: 'innerHTML'
+                });
+            }
+        } else {
+            list.style.display = 'none';
+            arrow.textContent = '▶';
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    }
+</script>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>{% block title %}Магазин{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+<body>
+    <div class="topbar">
+        <a class="topbar-link" hx-get="{% url 'product_list_partial' %}" hx-target="#main-content" hx-swap="innerHTML">Товары</a>
+        <a class="topbar-link" hx-get="{% url 'shop_list_partial' %}" hx-target="#main-content" hx-swap="innerHTML">Магазины</a>
+        <a class="topbar-link" hx-get="{% url 'add_product_partial' %}" hx-target="#main-content" hx-swap="innerHTML">Добавить товар</a>
+        <a class="topbar-link" hx-get="{% url 'add_shop_partial' %}" hx-target="#main-content" hx-swap="innerHTML">Добавить магазин</a>
+    </div>
+    <div
+            id="main-content"
+            class="container"
+            hx-get="{% url 'home_partial' %}"
+            hx-trigger="load"
+            hx-swap="innerHTML">
+    </div>
+</body>
+</html>

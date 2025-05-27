@@ -1,0 +1,57 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить магазин</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>🏪 Добавить новый магазин</h1>
+
+    <p style="text-align: center; color: #666; margin-bottom: 2rem; font-size: 1.1rem;">
+        Заполните информацию о новом магазине
+    </p>
+
+    <form method="post"
+          hx-post="{% url 'add_shop_partial' %}"
+          hx-target="#main-content"
+          hx-swap="innerHTML">
+        {% csrf_token %}
+
+        <div style="display: grid; gap: 1.5rem;">
+            {% for field in form %}
+                <div class="form-row">
+                    <label for="{{ field.id_for_label }}" style="display: flex; align-items: center; gap: 0.5rem;">
+                        {% if field.name == 'name' %}
+                            🏷️ {{ field.label }}
+                        {% elif field.name == 'location' %}
+                            📍 {{ field.label }}
+                        {% else %}
+                            {{ field.label }}
+                        {% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: #ff6b6b; font-size: 0.9rem; margin-top: 0.5rem;">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 3rem;">
+            <button type="submit" class="button" style="padding: 1.2rem 3rem; font-size: 1.1rem;">
+                💾 Сохранить магазин
+            </button>
+
+            <a hx-get="{% url 'shop_list_partial' %}"
+               hx-target="#main-content"
+               hx-swap="innerHTML"
+               class="button"
+               style="background: rgba(102, 126, 234, 0.1); color: #667eea; border: 2px solid #667eea; padding: 1.2rem 3rem;">
+                ← Назад к списку магазинов
+            </a>
+        </div>
+    </form>
+</div>
+</body>

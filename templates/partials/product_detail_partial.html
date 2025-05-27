@@ -1,0 +1,68 @@
+<head>
+    <title>Детали товара</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="product-detail">
+        <h1>{{ product.name }}</h1>
+        <img src="data:image/png;base64,{{ product.image }}" alt="{{ product.name }}">
+
+        <div class="info-block">
+            <p><strong>💰 Цена:</strong> {{ product.price }} руб.</p>
+            <p><strong>📦 Всего на складе:</strong> {{ product.total_stock }} шт.</p>
+        </div>
+
+        {% if product.description %}
+        <div class="info-block">
+            <p><strong>📝 Описание:</strong></p>
+            <p style="margin-top: 1rem; line-height: 1.6;">{{ product.description }}</p>
+        </div>
+        {% endif %}
+
+        <div class="product-shops">
+            <h3>🏪 Доступно в магазинах:</h3>
+            <ul>
+                {% for shop in product.shops.all %}
+                    <li>{{ shop.name }} - {{ shop.location }}</li>
+                {% empty %}
+                    <li style="color: #999; font-style: italic;">Нет привязанных магазинов</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div style="margin-top: 3rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a
+                hx-get="{% url 'edit_product_partial' product.id %}"
+                hx-target="#main-content"
+                hx-swap="innerHTML"
+                class="button"
+            >
+                ✏️ Редактировать
+            </a>
+
+            <form method="post"
+                  hx-post="{% url 'delete_product_partial' product.id %}"
+                  hx-target="#main-content"
+                  hx-swap="innerHTML"
+                  hx-confirm="Вы уверены, что хотите удалить этот товар?"
+                  style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" name="delete" class="button danger">
+                    🗑️ Удалить товар
+                </button>
+            </form>
+
+            <a
+                hx-get="{% url 'product_list_partial' %}"
+                hx-target="#main-content"
+                hx-swap="innerHTML"
+                class="button"
+                style="background: rgba(102, 126, 234, 0.1); color: #667eea; border: 2px solid #667eea;"
+            >
+                ← Назад к списку
+            </a>
+        </div>
+    </div>
+</div>
+</body>

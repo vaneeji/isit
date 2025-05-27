@@ -1,0 +1,122 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить товар</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>➕ Добавить новый товар</h1>
+
+    <form method="post" enctype="multipart/form-data"
+          hx-post="/products/add/"
+          hx-target="#main-content"
+          hx-swap="innerHTML">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <label for="{{ form.name.id_for_label }}">
+                🏷️ {{ form.name.label }}
+            </label>
+            {{ form.name }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.price.id_for_label }}">
+                💰 {{ form.price.label }}
+            </label>
+            {{ form.price }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.description.id_for_label }}">
+                📝 {{ form.description.label }}
+            </label>
+            {{ form.description }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.image_file.id_for_label }}">
+                🖼️ {{ form.image_file.label }}
+            </label>
+            {{ form.image_file }}
+        </div>
+
+        <div style="background: rgba(102, 126, 234, 0.05); padding: 2rem; border-radius: 15px; margin: 2rem 0; border-left: 4px solid #667eea;">
+            <h3>🏪 Наличие по магазинам</h3>
+            <p style="color: #666; margin-bottom: 1.5rem;">Укажите количество товара в каждом магазине</p>
+
+            <div id="shop-stock-container">
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+                    <div>
+                        <label for="shop-0">Магазин:</label>
+                        <select name="shops" id="shop-0">
+                            {% for shop in shops %}
+                                <option value="{{ shop.id }}">{{ shop.name }} - {{ shop.location }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="stock-0">Количество:</label>
+                        <input type="number" name="stocks" id="stock-0" min="0" placeholder="0">
+                    </div>
+                    <div></div>
+                </div>
+            </div>
+
+            <button type="button" class="button" onclick="addShopStockRow()"
+                    style="background: rgba(118, 75, 162, 0.1); color: #764ba2; border: 2px solid #764ba2; margin-top: 1rem;">
+                ➕ Добавить магазин
+            </button>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 3rem;">
+            <button type="submit" class="button" style="padding: 1.2rem 3rem; font-size: 1.1rem;">
+                💾 Сохранить товар
+            </button>
+
+            <a class="button"
+               hx-get="{% url 'product_list_partial' %}"
+               hx-target="#main-content"
+               hx-swap="innerHTML"
+               style="background: rgba(102, 126, 234, 0.1); color: #667eea; border: 2px solid #667eea; padding: 1.2rem 3rem;">
+                ← Отмена
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    let shopIndex = 1;
+
+    function addShopStockRow() {
+        const container = document.getElementById('shop-stock-container');
+
+        const newRow = document.createElement('div');
+        newRow.className = 'form-row';
+        newRow.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end; margin-top: 1rem;';
+
+        newRow.innerHTML = `
+            <div>
+                <label for="shop-${shopIndex}">Магазин:</label>
+                <select name="shops" id="shop-${shopIndex}">
+                    {% for shop in shops %}
+                        <option value="{{ shop.id }}">{{ shop.name }} - {{ shop.location }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="stock-${shopIndex}">Количество:</label>
+                <input type="number" name="stocks" id="stock-${shopIndex}" min="0" placeholder="0">
+            </div>
+            <div>
+                <button type="button" class="remove-button" onclick="this.parentElement.parentElement.remove()">
+                    🗑️ Удалить
+                </button>
+            </div>
+        `;
+
+        container.appendChild(newRow);
+        shopIndex++;
+    }
+</script>
+</body>

@@ -1,0 +1,140 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Редактировать товар</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>✏️ Редактировать товар: {{ product.name }}</h1>
+
+    <form method="post" enctype="multipart/form-data"
+          hx-post="{% url 'edit_product_partial' product.id %}"
+          hx-target="#main-content"
+          hx-swap="innerHTML">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <label for="{{ form.name.id_for_label }}">
+                🏷️ {{ form.name.label }}
+            </label>
+            {{ form.name }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.price.id_for_label }}">
+                💰 {{ form.price.label }}
+            </label>
+            {{ form.price }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.description.id_for_label }}">
+                📝 {{ form.description.label }}
+            </label>
+            {{ form.description }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.image_file.id_for_label }}">
+                🖼️ {{ form.image_file.label }}
+            </label>
+            {{ form.image_file }}
+        </div>
+
+        <div style="background: rgba(102, 126, 234, 0.05); padding: 2rem; border-radius: 15px; margin: 2rem 0; border-left: 4px solid #667eea;">
+            <h3>🏪 Наличие по магазинам</h3>
+            <p style="color: #666; margin-bottom: 1.5rem;">Укажите количество товара в каждом магазине</p>
+
+            {{ formset.management_form }}
+
+            <div id="shop-stock-container">
+                {% for form in formset %}
+                    {% if form.instance.pk %}
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end; {% if not forloop.first %}margin-top: 1rem;{% endif %}">
+                            {{ form.id }}
+                            <div>
+                                <label for="{{ form.shop.id_for_label }}">Магазин:</label>
+                                {{ form.shop }}
+                            </div>
+                            <div>
+                                <label for="{{ form.stock.id_for_label }}">Количество:</label>
+                                {{ form.stock }}
+                            </div>
+                            <div>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; color: #e74c3c; cursor: pointer;">
+                                    {{ form.DELETE }}
+                                    🗑️ Удалить
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <button type="button" class="button" onclick="addShopStockRow()"
+                    style="background: rgba(118, 75, 162, 0.1); color: #764ba2; border: 2px solid #764ba2; margin-top: 1rem;">
+                ➕ Добавить магазин
+            </button>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 3rem;">
+            <button type="submit" class="button" style="padding: 1.2rem 3rem; font-size: 1.1rem;">
+                💾 Сохранить изменения
+            </button>
+
+            <a class="button"
+               hx-get="{% url 'product_list_partial' %}"
+               hx-target="#main-content"
+               hx-swap="innerHTML"
+               style="background: rgba(102, 126, 234, 0.1); color: #667eea; border: 2px solid #667eea; padding: 1.2rem 3rem;">
+                ← Назад к списку
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    let shopIndex = {{ formset.total_form_count }};
+
+    function addShopStockRow() {
+        const container = document.getElementById('shop-stock-container');
+        const totalForms = document.getElementById('id_shopstock_set-TOTAL_FORMS');
+
+        const newRow = document.createElement('div');
+        newRow.className = 'form-row';
+        newRow.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end; margin-top: 1rem;';
+
+        newRow.innerHTML = `
+            <div>
+                <label for="id_shopstock_set-${shopIndex}-shop">Магазин:</label>
+                <select name="shopstock_set-${shopIndex}-shop" id="id_shopstock_set-${shopIndex}-shop">
+                    <option value="">---------</option>
+                    {% for shop in shops %}
+                        <option value="{{ shop.id }}">{{ shop.name }} - {{ shop.location }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="id_shopstock_set-${shopIndex}-stock">Количество:</label>
+                <input type="number" name="shopstock_set-${shopIndex}-stock" id="id_shopstock_set-${shopIndex}-stock" min="0" placeholder="0">
+            </div>
+            <div>
+                <button type="button" class="remove-button" onclick="this.parentElement.parentElement.remove(); updateFormsetCount();">
+                    🗑️ Удалить
+                </button>
+            </div>
+        `;
+
+        container.appendChild(newRow);
+        shopIndex++;
+
+        // Обновляем общее количество форм
+        totalForms.value = parseInt(totalForms.value) + 1;
+    }
+
+    function updateFormsetCount() {
+        const totalForms = document.getElementById('id_shopstock_set-TOTAL_FORMS');
+        totalForms.value = document.querySelectorAll('#shop-stock-container .form-row').length;
+    }
+</script>
+</body>

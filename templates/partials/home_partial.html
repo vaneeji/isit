@@ -1,0 +1,35 @@
+<div class="container welcome-container">
+    <h1>🛍️ Добро пожаловать в наш магазин!</h1>
+    <p style="font-size: 1.2rem; color: #666; margin: 2rem 0; font-weight: 300;">
+        Откройте для себя мир качественных товаров по выгодным ценам
+    </p>
+    <div style="margin-top: 3rem;">
+        <a
+            href=""
+            class="button"
+            hx-get="{% url 'product_list_partial' %}"
+            hx-target="#main-content"
+            hx-swap="innerHTML"
+            style="font-size: 1.1rem; padding: 1.2rem 3rem;">
+            ✨ Перейти к списку товаров
+        </a>
+    </div>
+    <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a
+            class="button"
+            hx-get="{% url 'shop_list_partial' %}"
+            hx-target="#main-content"
+            hx-swap="innerHTML"
+            style="background: rgba(102, 126, 234, 0.1); color: #667eea; border: 2px solid #667eea;">
+            🏪 Наши магазины
+        </a>
+        <a
+            class="button"
+            hx-get="{% url 'add_product_partial' %}"
+            hx-target="#main-content"
+            hx-swap="innerHTML"
+            style="background: rgba(118, 75, 162, 0.1); color: #764ba2; border: 2px solid #764ba2;">
+            ➕ Добавить товар
+        </a>
+    </div>
+</div>
