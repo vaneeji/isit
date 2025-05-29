@@ -37,10 +37,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         product = get_object_or_404(Product, pk=pk)
         inventories = request.data.get('inventories', [])
 
-        # Clear existing inventory
         Inventory.objects.filter(product=product).delete()
 
-        # Create new inventory records
         for inventory_data in inventories:
             if 'shop_id' in inventory_data and 'stock' in inventory_data:
                 Inventory.objects.create(
@@ -69,7 +67,6 @@ class ShopViewSet(viewsets.ModelViewSet):
     def destroy(self, request, pk=None):
         shop = get_object_or_404(Shop, pk=pk)
 
-        # Delete products that exist only in this shop
         for inventory in Inventory.objects.filter(shop=shop):
             product = inventory.product
             inventory.delete()

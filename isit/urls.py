@@ -7,20 +7,16 @@ from rest_framework.routers import DefaultRouter
 from bmstu_lab import api_views
 from bmstu_lab import views
 
-# API Router
 router = DefaultRouter()
 router.register(r'products', api_views.ProductViewSet)
 router.register(r'shops', api_views.ShopViewSet)
 router.register(r'inventory', api_views.InventoryViewSet)
 
 urlpatterns = [
-                  # Admin
                   path('admin/', admin.site.urls),
 
-                  # API endpoints
                   path('api/', include(router.urls)),
 
-                  # Original template-based views (optional, for backward compatibility)
                   path('', views.base, name='base'),
                   path('home_partial/', views.home_partial, name='home_partial'),
                   path('products/', views.product_list_partial, name='product_list_partial'),

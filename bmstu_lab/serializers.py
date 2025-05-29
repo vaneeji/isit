@@ -76,7 +76,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             product.image = base64.b64encode(image_file.read()).decode('utf-8')
             product.save()
 
-        # Create inventory records
         for shop_data in shops_data:
             if 'shop_id' in shop_data and 'stock' in shop_data:
                 Inventory.objects.create(
