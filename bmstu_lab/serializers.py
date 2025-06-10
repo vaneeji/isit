@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import serializers
 from .models import Product, Shop, Inventory
 
@@ -76,12 +78,11 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             product.image = base64.b64encode(image_file.read()).decode('utf-8')
             product.save()
 
-        for shop_data in shops_data:
-            if 'shop_id' in shop_data and 'stock' in shop_data:
+        for key, value in shops_data:
                 Inventory.objects.create(
                     product=product,
-                    shop_id=shop_data['shop_id'],
-                    stock=shop_data['stock']
+                    shop_id=key,
+                    stock=value
                 )
 
         return product
